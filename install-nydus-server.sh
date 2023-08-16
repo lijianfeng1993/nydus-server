@@ -22,7 +22,7 @@ checkanduninstallnydus() {
   echo "[-] remove old nydus service"
   if [ -f ${root}/usr/bin/containerd-nydus-grpc ]; then rm ${root}/usr/bin/containerd-nydus-grpc; fi
   if [ -f ${root}/usr/bin/ctr-remote ]; then rm ${root}/usr/bin/ctr-remote; fi
-  if [ -f ${root}/usr/binnydusctl/ ]; then rm ${root}/usr/bin/nydusctl; fi
+  if [ -f ${root}/usr/bin/nydusctl ]; then rm ${root}/usr/bin/nydusctl; fi
   if [ -f ${root}/usr/bin/nydusd ]; then rm ${root}/usr/bin/nydusd; fi
   if [ -f ${root}/usr/bin/nydus_graphdriver ]; then rm ${root}/usr/bin/nydus_graphdriver; fi
   if [ -f ${root}/usr/bin/nydusify ]; then rm ${root}/usr/bin/nydusify; fi

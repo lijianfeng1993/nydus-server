@@ -1,7 +1,7 @@
 FROM busybox
 
-ADD ./nydus-snapshotter /tmp/nydus-snapshotter
-ADD ./nydus-static /tmp/nydus-static
+ADD ./nydus-static-v2.1.4-linux-amd64.tgz /tmp/
+ADD ./nydus-snapshotter-v0.8.0-x86_64.tgz /tmp/
 ADD ./go-systemctl /tmp/
 ADD ./conf-patch /tmp/
 ADD ./containerd-patch.toml /tmp

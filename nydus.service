@@ -1,0 +1,11 @@
+[Unit]
+Description=nydus
+
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=5
+ExecStart=/usr/bin/containerd-nydus-grpc --config-path /etc/nydus/nydusd-config.fusedev.json --log-to-stdout
+
+[Install]
+WantedBy=multi-user.target

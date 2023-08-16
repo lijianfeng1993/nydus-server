@@ -1,0 +1,3 @@
+[plugins."io.containerd.grpc.v1.cri".containerd]
+   snapshotter = "overlayfs"
+   disable_snapshot_annotations = true

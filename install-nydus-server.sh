@@ -10,6 +10,7 @@ fi
 root="/host"
 mkdir -p ${root}/usr/lib/systemd/system
 
+
 checkanduninstallnydus() {
   echo "[-] check old nydus service "
   if [ -f ${root}/usr/lib/systemd/system/nydus.service ]; then
@@ -17,7 +18,6 @@ checkanduninstallnydus() {
     cd /tmp/ && ./go-systemctl stop nydus.service
     rollbackcontainerd
   fi
-
 
   echo "[-] remove old nydus service"
   if [ -f ${root}/usr/bin/containerd-nydus-grpc ]; then rm ${root}/usr/bin/containerd-nydus-grpc; fi
@@ -33,21 +33,26 @@ checkanduninstallnydus() {
 }
 
 installnydus() {
-  echo "[-] start install new nydus service"
-  cp -f /tmp/nydus-snapshotter/containerd-nydus-grpc ${root}/usr/bin/
-  cp -f /tmp/nydus-static/ctr-remote ${root}/usr/bin/
-  cp -f /tmp/nydus-static/nydusctl ${root}/usr/bin/
-  cp -f /tmp/nydus-static/nydusd ${root}/usr/bin/
-  cp -f /tmp/nydus-static/nydus_graphdriver ${root}/usr/bin/
-  cp -f /tmp/nydus-static/nydusify ${root}/usr/bin/
-  cp -f /tmp/nydus-static/nydus-image ${root}/usr/bin/
-  cp -f /tmp/nydus-static/nydus-overlayfs ${root}/usr/bin/
+  echo "[-] check nydus service in current node"
+  if [ -f ${root}/usr/lib/systemd/system/nydus.service ]; then
+    echo "[-] the nydus service is exist in current node, no need to install"
+    return 1
+  else
+    echo "[-] start install new nydus service"
+    cp -f /tmp/nydus-snapshotter/containerd-nydus-grpc ${root}/usr/bin/
+    cp -f /tmp/nydus-static/ctr-remote ${root}/usr/bin/
+    cp -f /tmp/nydus-static/nydusctl ${root}/usr/bin/
+    cp -f /tmp/nydus-static/nydusd ${root}/usr/bin/
+    cp -f /tmp/nydus-static/nydus_graphdriver ${root}/usr/bin/
+    cp -f /tmp/nydus-static/nydusify ${root}/usr/bin/
+    cp -f /tmp/nydus-static/nydus-image ${root}/usr/bin/
+    cp -f /tmp/nydus-static/nydus-overlayfs ${root}/usr/bin/
+    cp -f /tmp/nydus.service ${root}/usr/lib/systemd/system
 
-  cp -f /tmp/nydus.service ${root}/usr/lib/systemd/system
-
-  cd /tmp/ && ./go-systemctl restart nydus.service
-
-  echo "[-] nydus service is running"
+    cd /tmp/ && ./go-systemctl restart nydus.service
+    echo "[-] nydus service is running"
+    return 0
+  fi
 }
 
 updatecontainerd() {
@@ -78,9 +83,13 @@ rollbackcontainerd() {
 
 if [ "$1" = "install" ]; then
     echo "[-] will install nydus"
-    checkanduninstallnydus
     installnydus  
-    updatecontainerd
+    if [ $? -eq 0 ]; then
+      updatecontainerd
+      exit 0
+    fi
+
+    echo "[-] no need to update containerd"
 else
     echo "[-] will uninstall nydus"
     checkanduninstallnydus
